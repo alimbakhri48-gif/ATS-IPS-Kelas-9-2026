@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jelajah Perubahan Sosial & Globalisasi - Game IPS Kelas 9</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #2563eb;
+            --secondary: #0d9488;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 750px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        /* Screen Manager */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Form Registration */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-light);
+        }
+
+        /* Quiz UI */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            background: #eff6ff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: var(--primary-light);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-light);
+            background: #f0f7ff;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary-light);
+            background: #dbeafe;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn-main {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-main:hover {
+            background: #d97706;
+        }
+
+        .btn-main:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-main:active:not(:disabled) {
+            transform: scale(0.99);
+        }
+
+        /* Result Screen */
+        .result-card {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: var(--primary-light);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .score-box {
+            font-size: 3.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .result-details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .result-details div {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .result-details div:last-child {
+            border-bottom: none;
+        }
+
+        .status-msg {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.3rem; }
+            .question-text { font-size: 0.95rem; }
+            .option-btn { font-size: 0.88rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <h1>Jelajah Perubahan Sosial & Globalisasi</h1>
+        <p>Asesmen Tengah Semester - IPS Kelas 9</p>
+    </div>
+
+    <div class="content">
+        <!-- 1. SCREEN REGISTRASI -->
+        <div id="screen-start" class="screen active">
+            <h2 style="margin-bottom: 15px; color: var(--primary);">Data Peserta Game</h2>
+            <form id="form-register">
+                <div class="form-group">
+                    <label for="student-name">Nama Lengkap</label>
+                    <input type="text" id="student-name" placeholder="Masukkan nama lengkap kamu..." required>
+                </div>
+                <div class="form-group">
+                    <label for="student-class">Kelas</label>
+                    <select id="student-class" required>
+                        <option value="">-- Pilih Kelas IX --</option>
+                        <option value="IX-A">IX-A</option>
+                        <option value="IX-B">IX-B</option>
+                        <option value="IX-C">IX-C</option>
+                        <option value="IX-D">IX-D</option>
+                        <option value="IX-E">IX-E</option>
+                        <option value="IX-F">IX-F</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-main">Mulai Petualangan Game</button>
+            </form>
+        </div>
+
+        <!-- 2. SCREEN QUIZ -->
+        <div id="screen-quiz" class="screen">
+            <div class="quiz-header">
+                <span id="player-info">Nama (Kelas)</span>
+                <span id="question-tracker">Soal 1 / 50</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="question-text" id="question-text">
+                Teks pertanyaan akan tampil di sini...
+            </div>
+            <div class="options-container" id="options-container">
+                <!-- Option buttons generated dynamically -->
+            </div>
+            <button id="btn-next" class="btn-main" onclick="nextQuestion()" disabled>Jawab & Lanjut</button>
+        </div>
+
+        <!-- 3. SCREEN RESULT -->
+        <div id="screen-result" class="screen">
+            <div class="result-card">
+                <span class="badge" id="result-status">Selesai!</span>
+                <h2>Hasil Asesmen Kamu</h2>
+                <div class="score-box" id="final-score">0</div>
+                
+                <div class="result-details">
+                    <div><span>Nama Peserta:</span> <strong id="res-name">-</strong></div>
+                    <div><span>Kelas:</span> <strong id="res-class">-</strong></div>
+                    <div><span>Total Soal:</span> <strong id="res-total">50</strong></div>
+                    <div><span>Jawaban Benar:</span> <strong id="res-correct" style="color: var(--success);">0</strong></div>
+                    <div><span>Jawaban Salah:</span> <strong id="res-wrong" style="color: var(--danger);">0</strong></div>
+                </div>
+
+                <div id="status-msg" class="status-msg">Memproses pencatatan nilai ke sistem...</div>
+                <button class="btn-main" onclick="restartGame()">Ulangi Asesmen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- INTEGRASI GOOGLE APPS SCRIPT ---
+    // Tempelkan URL Web App dari Google Apps Script Anda di dalam tanda kutip berikut:
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwsH9u9e9Pjlng3sa0xSj9afQ10qyaEO1oh7PZg313dlqSxv4DpOW1WZpScmHzGgwq5/exec';
+
+    // Database Soal Asesmen IPS Kelas 9 (2026)
+    const quizData = [
+        {
+            q: "1. Perubahan sosial merupakan perubahan pada lembaga-lembaga kemasyarakatan di dalam suatu masyarakat yang memengaruhi sistem sosialnya, termasuk nilai-nilai, sikap, dan pola perilaku di antara kelompok-kelompok dalam masyarakat. Tokoh sosiologi yang mengemukakan pengertian perubahan sosial tersebut adalah ....",
+            options: ["A. Selo Soemardjan", "B. Gillin dan Gillin", "C. Kingsley Davis", "D. Pitirim A. Sorokin"],
+            answer: 0
+        },
+        {
+            q: "2. Perhatikan fenomena berikut!\n1) Pembangunan tol laut untuk meningkatkan keterhubungan antarwilayah.\n2) Perubahan gaya berpakaian remaja akibat pengaruh budaya populer mancanegara.\n3) Munculnya undang-undang baru tentang keterbukaan informasi publik.\n4) Penurunan daya beli masyarakat akibat bencana alam nasional.\nCiri perubahan sosial yang bersifat memengaruhi struktur dan sistem kelembagaan masyarakat secara formal ditunjukkan oleh nomor ....",
+            options: ["A. 1) dan 2)", "B. 2) dan 4)", "C. 3) dan 4)", "D. 1) dan 3)"],
+            answer: 3
+        },
+        {
+            q: "3. Masyarakat kawasan pegunungan yang terisolasi membutuhkan waktu beberapa dekade untuk mengadopsi sistem transaksi digital dalam aktivitas perdagangan mereka. Proses perubahan yang berlangsung lambat dan melalui tahapan-tahapan kecil berkesinambungan ini disebut ....",
+            options: ["A. evolusi sosial", "B. revolusi sosial", "C. perubahan direncanakan", "D. perubahan struktural"],
+            answer: 0
+        },
+        {
+            q: "4. Penemuan teknologi mesin uap pada era Revolusi Industri 1.0 mengubah tata kerja manufaktur dari tenaga manusia menjadi tenaga mesin secara mendasar dan dramatis dalam waktu singkat. Berdasarkan kecepatannya, fenomena ini dikategorikan sebagai ....",
+            options: ["A. evolusi lambat", "B. perubahan kecil", "C. revolusi sosial", "D. perubahan regress"],
+            answer: 2
+        },
+        {
+            q: "5. Penerapan seragam sekolah dengan model baru di suatu daerah hanya memengaruhi penampilan lahiriah peserta didik tanpa mengubah struktur dasar sistem pendidikan. Berdasarkan skala pengaruhnya, fenomena ini termasuk ke dalam ....",
+            options: ["A. perubahan besar", "B. perubahan kecil", "C. perubahan struktural", "D. perubahan revolusioner"],
+            answer: 1
+        },
+        {
+            q: "6. Pembangunan fasilitas jalan tol Trans-Jawa oleh pemerintah bertujuan memperlancar distribusi arus barang dan jasa antarprovinsi. Dilihat dari keterencanaannya, bentuk perubahan tersebut tergolong sebagai ....",
+            options: ["A. unplanned change", "B. perubahan regress", "C. evolusi kebudayaan", "D. planned change"],
+            answer: 3
+        },
+        {
+            q: "7. Sebuah kota pantai mengalami kerusakan fasilitas umum dan pergeseran mata pencaharian warga secara mendadak akibat diterjang tsunami. Peristiwa tersebut tergolong ke dalam bentuk perubahan sosial yang ....",
+            options: ["A. tidak direncanakan (unplanned change)", "B. direncanakan (planned change)", "C. berpengaruh kecil", "D. bersifat evolutif"],
+            answer: 0
+        },
+        {
+            q: "8. Penemuan jaringan internet dan smartphone memicu lahirnya berbagai aplikasi layanan publik digital. Faktor internal pemicu terjadinya perubahan sosial tersebut adalah ....",
+            options: ["A. terjadinya konflik horizontal antarwarga", "B. pengaruh budaya asing yang masuk melalui media", "C. penemuan baru (discovery/invention) dalam masyarakat", "D. perubahan kondisi iklim dan alam sekitar"],
+            answer: 2
+        },
+        {
+            q: "9. Perhatikan dua fenomena sosial berikut!\nFenomena A: Terjadinya pergeseran struktur kepemimpinan desa akibat masuknya program transmigrasi dari wilayah lain.\nFenomena B: Berkurangnya ketersediaan lahan pertanian produktif akibat alih fungsi menjadi kawasan industri manufaktur.\nFaktor eksternal pemicu perubahan sosial pada Fenomena A dan Fenomena B secara berurutan adalah ....",
+            options: ["A. dinamika jumlah penduduk dan perubahan lingkungan alam", "B. pengaruh kebudayaan masyarakat lain dan pertambahan penduduk", "C. penemuan teknologi baru dan konflik antarkelompok", "D. bencana alam dan peperangan antarwilayah"],
+            answer: 0
+        },
+        {
+            q: "10. Pembukaan akses jaringan transportasi modern ke desa-desa terpencil membuat warga desa lebih cepat menerima informasi dan teknologi baru dari luar. Faktor pendorong perubahan sosial pada kasus tersebut adalah ....",
+            options: ["A. prasangka terhadap hal-hal baru", "B. kontak dengan kebudayaan lain", "C. rasa takut akan terjadinya goyahnya integrasi", "D. pandangan hidup yang tradisional"],
+            answer: 1
+        },
+        {
+            q: "11. Sikap masyarakat tradisional yang menutup diri dari pengaruh luar serta menganggap tradisinya paling mutlak benar dapat menghambat kemajuan. Faktor penghambat perubahan sosial tersebut dinamakan ....",
+            options: ["A. toleransi terhadap perbuatan menyimpang", "B. nilai bahwa hidup ini pada hakikatnya buruk", "C. sikap egosentris dan vested interest kelompok", "D. kurangnya hubungan dengan masyarakat lain serta vested interest"],
+            answer: 2
+        },
+        {
+            q: "12. Peralihan penggunaan sistem pembayaran dari uang tunai ke transaksi cashless (QRIS) membuat proses transaksi jual beli di pasar menjadi lebih efisien dan terdata dengan rapi. Dampak positif dari perubahan sosial tersebut adalah ....",
+            options: ["A. meningkatnya angka kriminalitas jalanan", "B. terjadinya ketimpangan akses teknologi", "C. konsumerisme yang tidak terkontrol", "D. efisiensi dan modernisasi sistem ekonomi"],
+            answer: 3
+        },
+        {
+            q: "13. Perkembangan media sosial membuat sebagian remaja cenderung mengabaikan interaksi tatap muka secara langsung saat berkumpul bersama keluarga. Dampak negatif dari perubahan sosial tersebut terhadap pola interaksi masyarakat adalah ....",
+            options: ["A. terciptanya individualisme dan memudarnya komunikasi tatap muka", "B. meningkatnya solidaritas sosial antaranggota keluarga", "C. menguatnya integrasi sosial di tingkat lokal", "D. hilangnya norma hukum dalam kehidupan bermasyarakat"],
+            answer: 0
+        },
+        {
+            q: "14. Modernisasi merupakan suatu proses perubahan sosial di mana masyarakat yang sedang memperbarui dirinya berusaha mendapatkan karakteristik yang dimiliki oleh masyarakat modern. Ciri utama dari masyarakat yang telah mengalami modernisasi adalah ....",
+            options: ["A. mengandalkan kepercayaan mistis dalam mengambil keputusan", "B. memiliki pola pikir rasional dan berorientasi ke masa depan", "C. menolak penggunaan teknologi otomatisasi", "D. mempertahankan sistem barter dalam perdagangan"],
+            answer: 1
+        },
+        {
+            q: "15. Pembelajaran di sekolah kini memanfaatkan Learning Management System (LMS) dan papan tulis interaktif berbasis digital. Fenomena ini menunjukkan proses modernisasi pada bidang ....",
+            options: ["A. pertahanan dan keamanan", "B. pendidikan", "C. keagamaan", "D. kesenian daerah"],
+            answer: 1
+        },
+        {
+            q: "16. Penggunaan aplikasi navigasi berbasis GPS oleh pengemudi angkutan umum memudahkan mereka menemukan rute tercepat dan menghindari kemacetan kota. Dampak positif modernisasi sarana transportasi tersebut adalah ....",
+            options: ["A. meningkatnya angka kecelakaan lalu lintas", "B. memudarnya budaya gotong royong warga kota", "C. tingginya ketergantungan pada energi fosil", "D. peningkatan efisiensi waktu dan mobilitas masyarakat"],
+            answer: 3
+        },
+        {
+            q: "17. Dahulu pembeli harus mengantre panjang di kasir toko retail untuk membayar tunai. Saat ini, pembeli cukup memindai kode QR melalui smartphone untuk menyelesaikan transaksi dalam hitungan detik. Perubahan pola kehidupan tersebut menandakan terjadi modernisasi di bidang ....",
+            options: ["A. ekonomi dan sistem pembayaran", "B. sistem pertahanan negara", "C. pembagian strata sosial", "D. struktur pemerintahan daerah"],
+            answer: 0
+        },
+        {
+            q: "18. Kehadiran platform pasar daring (e-commerce) memungkinkan pengusaha UMKM di pedesaan memasarkan produk kerajinan tangan langsung ke pembeli di kota besar tanpa melalui rantai tengkulak. Hubungan antara modernisasi teknologi dengan perubahan pola pekerjaan pada contoh tersebut adalah ....",
+            options: ["A. menutup peluang usaha bagi masyarakat kecil", "B. memperluas jangkauan pasar dan menciptakan efisiensi rantai pasok", "C. mewajibkan seluruh pengusaha pindah menetap di perkotaan", "D. menurunkan kualitas barang yang diproduksi secara lokal"],
+            answer: 1
+        },
+        {
+            q: "19. Sebagian warga perkotaan saat ini lebih memilih memesan makanan siap saji melalui aplikasi ponsel pintar dibandingkan memasak sendiri di rumah karena kesibukan kerja yang tinggi. Perubahan perilaku ini mencerminkan modernisasi pada aspek ....",
+            options: ["A. sistem politik masyarakat", "B. struktur kelembagaan desa", "C. pola konsumsi dan gaya hidup", "D. aturan hukum pidana"],
+            answer: 2
+        },
+        {
+            q: "20. Penggunaan aplikasi percakapan instan berbasis internet memungkinkan komunikasi antaranggota organisasi tetap berjalan cepat tanpa terbatas ruang dan waktu. Dampak perubahan tersebut terhadap hubungan sosial adalah ....",
+            options: ["A. meningkatnya biaya operasional komunikasi fisik", "B. terhentinya arus informasi di dalam organisasi", "C. memudarnya fleksibilitas interaksi sosial", "D. terciptanya konektivitas yang melintasi batas geografis"],
+            answer: 3
+        },
+        {
+            q: "21. Karakteristik kehidupan masyarakat desa yang dahulu kental dengan sifat paguyuban (persaudaraan erat) perlahan mulai mengadopsi sifat patembayan (kontraktual dan lugas) akibat masuknya pusat-pusat industri manufaktur. Faktor pemicu perubahan masyarakat desa tersebut adalah ....",
+            options: ["A. penetrasi modernisasi dan industrialisasi kawasan", "B. penutupan jaringan sarana komunikasi darat", "C. penurunan kualitas pendidikan warga desa", "D. penguatan tradisi isolated secara turun-temurun"],
+            answer: 0
+        },
+        {
+            q: "22. Modernisasi memberikan kemudahan akses informasi kesehatan, namun di sisi lain menyebabkan peningkatan sampah elektronik (e-waste) akibat tingginya pergantian gawai masyarakat. Analisis yang tepat mengenai fenomena tersebut adalah ....",
+            options: ["A. modernisasi selalu membawa kerugian bagi kehidupan manusia", "B. teknologi harus dilarang penggunaannya agar lingkungan lestari", "C. modernisasi memiliki dua sisi dampak yang membutuhkan pengelolaan bijak", "D. dampak negatif modernisasi tidak dapat dicegah sama sekali"],
+            answer: 2
+        },
+        {
+            q: "23. Tingginya arus modernisasi memicu munculnya gaya hidup konsumtif, di mana seseorang membeli barang bukan berdasarkan kebutuhan melainkan demi gengsi sosial. Tantangan modernisasi tersebut dapat diatas melalui sikap ....",
+            options: ["A. menutup diri dari perkembangan teknologi digital", "B. menerapkan pola hidup hemat dan rasional dalam berbelanja", "C. mengajukan pinjaman daring sebanyak-banyaknya", "D. mengikuti seluruh tren budaya luar tanpa menyaring"],
+            answer: 1
+        },
+        {
+            q: "24. Banyak remaja lebih menyukai makanan cepat saji (fast food) asing ketimbang makanan tradisional karena dianggap lebih modern dan bergengsi. Dampak negatif fenomena ini terhadap keberlanjutan budaya lokal adalah ....",
+            options: ["A. meningkatnya ekspor komoditas rempah nasional", "B. menguatnya identitas kuliner tradisional", "C. munculnya inovasi resep makanan daerah", "D. terancamnya kelestarian dan popularitas kuliner lokal"],
+            answer: 3
+        },
+        {
+            q: "25. Dalam menghadapi era modernisasi yang bergerak pesat, sikap yang paling tepat ditunjukkan oleh peserta didik adalah ....",
+            options: ["A. menerima seluruh perkembangan teknologi dan budaya luar secara selektif", "B. menolak semua produk teknologi buatan luar negeri", "C. mengabaikan norma kebudayaan asli demi kemajuan zaman", "D. mengisolasi diri dari pergaulan dunia digital"],
+            answer: 0
+        },
+        {
+            q: "26. Sebuah perusahaan manufaktur mengganti 70% tenaga kerja manusia dengan mesin robotik otomatis demi meningkatkan presisi produksi. Dampak sosial dari modernisasi sistem kerja tersebut yang memerlukan penanganan pemerintah adalah ....",
+            options: ["A. penurunan jumlah barang yang beredar di pasar nasional", "B. peningkatan risiko PHK massal dan kebutuhan pelatihan ulang keterampilan kerja", "C. hilangnya keinginan investor asing menanamkan modal", "D. Kenaikan harga bahan baku industri secara mendadak"],
+            answer: 1
+        },
+        {
+            q: "27. Globalisasi adalah proses menyatunya warga dunia ke dalam satu masyarakat dunia yang tunggal dan saling terhubung. Faktor utama yang mempercepat terjadinya globalisasi pada abad ke-21 adalah ....",
+            options: ["A. penurunan jumlah penduduk di negara berkembang", "B. pesatnya kemajuan teknologi informasi, komunikasi, dan transportasi", "C. pembatasan ketat aktivitas perdagangan antarnusa", "D. pembentukan benteng pertahanan militer antarbenua"],
+            answer: 1
+        },
+        {
+            q: "28. Perkembangan jaringan internet berkecepatan tinggi memungkinkan seseorang di Indonesia menyaksikan siaran langsung pertandingan olahraga di Eropa secara real-time. Fenomena ini menandakan hilangnya sekat ruang dan waktu yang merupakan ciri utama dari ....",
+            options: ["A. revolusi politik lokal", "B. isolasi kebudayaan", "C. stagnasi ekonomi", "D. globalisasi"],
+            answer: 3
+        },
+        {
+            q: "29. Perhatikan indikator berikut!\n1) Meningkatnya volume perdagangan lintas negara.\n2) Dominasi penggunaan bahasa daerah di tingkat internasional.\n3) Penyebaran informasi secara instan melalui platform media sosial global.\n4) Berkurangnya migrasi penduduk antarnegara.\nCiri-ciri berkembangnya globalisasi ditunjukkan oleh nomor ....",
+            options: ["A. 1) dan 3)", "B. 1) dan 2)", "C. 2) dan 4)", "D. 3) dan 4)"],
+            answer: 0
+        },
+        {
+            q: "30. Produk-produk jenama busana internasional dengan mudah ditemukan di pusat perbelanjaan berbagai kota besar di Indonesia. Dampak fenomena globalisasi ekonomi tersebut terhadap produsen lokal adalah ....",
+            options: ["A. hilangnya kebutuhan masyarakat akan barang konsumsi", "B. terjaminnya keuntungan besar bagi pengrajin kecil secara otomatis", "C. persaingan usaha yang makin ketat sehingga menuntut peningkatan kualitas produk", "D. penutupan seluruh pabrik tekstil milik pemerintah"],
+            answer: 2
+        },
+        {
+            q: "31. Anak-anak muda di Indonesia saat ini sangat familiar dengan musik K-Pop, drama Korea, serta gaya berpakaian ala Barat. Fenomena ini merupakan bentuk pengaruh globalisasi pada bidang ....",
+            options: ["A. politik dan hukum", "B. sosial dan budaya", "C. sistem pertahanan", "D. struktur geologi"],
+            answer: 1
+        },
+        {
+            q: "32. Penggunaan platform pembelajaran berbasis video konferensi memungkinkan mahasiswa di Indonesia mengikuti perkuliahan daring dari profesor yang mengajar di universitas luar negeri. Peluang globalisasi pada bidang pendidikan ini bermanfaat untuk ....",
+            options: ["A. mengurangi jumlah lulusan sekolah menengah", "B. menghapus kurikulum nasional secara menyeluruh", "C. memperluas akses ilmu pengetahuan dan meningkatkan kualitas SDM", "D. mewajibkan penggunaan bahasa asing dalam percakapan sehari-hari"],
+            answer: 2
+        },
+        {
+            q: "33. Masuknya perusahaan asing ke pasar dalam negeri dapat membuka lapangan kerja baru bagi warga lokal, namun di sisi lain berisiko mengalirkan keuntungan keluar negeri. Langkah kritis pemerintah dalam menyikapi tantangan globalisasi ekonomi tersebut adalah ....",
+            options: ["A. memperketat regulasi investasi dengan mewajibkan kemitraan dan transfer teknologi", "B. melarang seluruh perusahaan asing beroperasi di wilayah Indonesia", "C. menjual semua aset BUMN kepada pihak investor asing", "D. membebaskan pajak bagi perusahaan asing tanpa syarat apapun"],
+            answer: 0
+        },
+        {
+            q: "34. Maraknya penyebaran berita bohong (hoax) dan propaganda negatif di media sosial yang berasal dari berbagai penjuru dunia dapat memicu disintegrasi bangsa. Sikap kritis generasi muda dalam menghadapi tantangan globalisasi informasi tersebut adalah ....",
+            options: ["A. menyebarkan kembali semua informasi yang diterima tanpa dibaca", "B. langsung mempercayai informasi yang memuat judul provokatif", "C. melakukan verifikasi (fact-checking) sebelum membagikan informasi", "D. mematikan koneksi internet di seluruh wilayah pemukiman"],
+            answer: 2
+        },
+        {
+            q: "35. Perdagangan bebas antarnegara dalam kerangka globalisasi mempermudah masuknya komoditas impor berharga murah. Pengaruh kondisi ini terhadap kelangsungan hidup petani lokal adalah ....",
+            options: ["A. meningkatkan hasil panen petani lokal secara instan", "B. menekan harga jual produk pertanian lokal jika tidak bersaing secara kualitas", "C. memberikan bantuan modal cuma-cuma dari negara pengimpor", "D. menghilangkan kebutuhan pupuk dalam proses budi daya"],
+            answer: 1
+        },
+        {
+            q: "36. Pertukaran budaya melalui program pertukaran pelajar antarnegara memberikan peluang bagi remaja Indonesia untuk ....",
+            options: ["A. meninggalkan kewarganegaraan Indonesia secara permanen", "B. mengganti bahasa nasional dengan bahasa negara sahabat", "C. menghapus adat istiadat suku asal demi kepraktisan", "D. memperkenalkan kebudayaan Nusantara ke mancanegara sekaligus memperluas wawasan"],
+            answer: 3
+        },
+        {
+            q: "37. Fenomena 'Westernisasi' sering kali dianggap sama dengan globalisasi, padahal keduanya memiliki perbedaan mendasar. Letak perbedaan tersebut adalah ....",
+            options: ["A. Westernisasi adalah peniruan gaya hidup Barat, sedangkan globalisasi adalah proses saling terhubung secara mendunia", "B. Westernisasi selalu berdampak positif, sedangkan globalisasi berdampak negatif", "C. Westernisasi terjadi di bidang ekonomi, sedangkan globalisasi hanya di bidang politik", "D. Westernisasi menolak teknologi, sedangkan globalisasi menerima teknologi"],
+            answer: 0
+        },
+        {
+            q: "38. Arus globalisasi yang begitu deras berisiko mengikis rasa cinta tanah air pada generasi muda jika tidak dibentengi dengan filter yang kuat. Ideologi negara yang menjadi filter utama bangsa Indonesia dalam menyaring pengaruh globalisasi adalah ....",
+            options: ["A. Liberalisme", "B. Sosialisme", "C. Pancasila", "D. Kapitalisme"],
+            answer: 2
+        },
+        {
+            q: "39. Banyak bisnis ritel tradisional gulung tikar karena kalah bersaing dengan platform belanja daring (online marketplace) global yang menawarkan diskon besar dan kemudahan pengiriman. Kunci utama agar pelaku usaha lokal bertahan di era globalisasi adalah ....",
+            options: ["A. memprotes kebijakan penggunaan internet", "B. melakukan inovasi digital dan meningkatkan kualitas pelayanan pelanggan", "C. menurunkan mutu barang agar harga menjadi sangat murah", "D. berhenti melakukan aktivitas produksi"],
+            answer: 1
+        },
+        {
+            q: "40. Kearifan lokal (local wisdom) dapat diartikan sebagai ....",
+            options: ["A. gagasan, nilai, dan pandangan hidup setempat yang bersifat bijaksana serta ditaati warga secara turun-temurun", "B. seluruh undang-undang tertulis yang dibuat oleh lembaga legislatif pusat", "C. gaya hidup modern yang diadopsi dari masyarakat perkotaan", "D. ilmu pengetahuan murni yang dipelajari di bangku perguruan tinggi"],
+            answer: 0
+        },
+        {
+            q: "41. Masyarakat adat Baduy Luar di Banten memiliki kearifan lokal berupa pembagian wilayah hutan tutupan (hutan lindung) yang dilarang keras untuk ditebang atau diubah fungsinya. Fungsi kearifan lokal tersebut adalah ....",
+            options: ["A. memicu konflik perebutan lahan antarwarga desa", "B. menjaga kelestarian lingkungan hidup dan keseimbangan ekosistem", "C. menghambat masuknya wisatawan mancanegara", "D. mempercepat proses alokasi pertambangan kayu"],
+            answer: 1
+        },
+        {
+            q: "42. Perhatikan kearifan lokal berikut: Subak (Bali), Lubuk Larangan (Sumatra Barat), Sasi (Maluku), dan Pahomba (Sumba). Persamaan nilai utama yang terkandung dalam keempat kearifan lokal tersebut adalah ....",
+            options: ["A. eksploitasi alam besar-besaran untuk kepentingan komersial", "B. penolakan terhadap ajaran agama yang masuk ke daerah", "C. pengelolaan dan pelestarian sumber daya alam secara berkelanjutan", "D. pembaginya sistem pemerintahan modern secara mutlak"],
+            answer: 2
+        },
+        {
+            q: "43. Di Jawa, terdapat tradisi Gotong Royong atau Sambatan saat membangun rumah warga, di mana tetangga sekitar membantu tanpa mengharapkan imbalan uang. Nilai kearifan lokal yang terkandung dalam tradisi tersebut adalah ....",
+            options: ["A. komersialisasi tenaga kerja", "B. kebersamaan, keikhlasan, dan solidaritas sosial", "C. kepasrahan terhadap nasib", "D. individualisme dalam bermasyarakat"],
+            answer: 1
+        },
+        {
+            q: "44. Sistem pertanian Subak di Bali tidak hanya mengandalkan teknik pembagian air sungai yang adil, tetapi juga diikat oleh nilai keagamaan dan filosofi Tri Hita Karana. Peran kearifan lokal Subak dalam menunjang ketahanan pangan lokal adalah ....",
+            options: ["A. mencegah timbulnya hama tanaman secara gaib", "B. mengatur alokasi air irigasi secara merata sehingga meminimalkan konflik antarpetani", "C. mewajibkan petani menjual seluruh hasil panen ke tengkulak luar", "D. melarang penggunaan alat-alat pertanian modern"],
+            answer: 1
+        },
+        {
+            q: "45. Salah satu tantangan terbesar kearifan lokal pada era globalisasi adalah berkembangnya gaya hidup individualistis yang mengikis tradisi kebersamaan di masyarakat. Upaya tepat generasi muda untuk melestarikan kearifan lokal tersebut adalah ....",
+            options: ["A. mempelajari dan mempromosikan nilai-nilai kearifan lokal melalui media digital", "B. menganggap tradisi lokal sebagai hal kuno yang harus ditinggalkan", "C. melarang wisatawan luar memasuki kawasan-kawasan adat", "D. mengganti seluruh ritual adat dengan budaya pop modern"],
+            answer: 0
+        },
+        {
+            q: "46. Masyarakat pesisir di beberapa wilayah Indonesia menerapkan tradisi 'Petik Laut' atau 'Sedekah Laut' sebagai ungkapan rasa syukur atas hasil tangkapan ikan sekaligus bentuk penghormatan pada alam. Fungsi kearifan lokal tersebut dalam kehidupan sosial adalah ....",
+            options: ["A. mempererat tali silaturahmi warga dan memperkuat identitas budaya bahari", "B. menghabiskan anggaran dana desa untuk kegiatan hura-hura", "C. menakut-nakuti nelayan agar tidak melaut sepanjang tahun", "D. menghentikan perdagangan ikan di pasar tradisional"],
+            answer: 0
+        },
+        {
+            q: "47. Kearifan lokal berupa norma adat sering kali memuat sanksi sosial bagi warga yang merusak lingkungan, seperti menebang pohon di mata air. Keunggulan sanksi adat dibandingkan hukum formal dalam menjaga kelestarian alam desa adalah ....",
+            options: ["A. memiliki biaya pembuatan hukum yang sangat mahal", "B. langsung mengikat secara moral dan menimbulkan rasa malu sosial pada pelanggar", "C. mudah diabaikan oleh warga karena tidak ditulis di kertas", "D. memerlukan persetujuan dari lembaga PBB"],
+            answer: 1
+        },
+        {
+            q: "48. Era digital memberikan kesempatan emas bagi pengembangan kearifan lokal. Langkah inovatif yang dapat dilakukan generasi muda untuk mengenalkan kearifan lokal Nusantara ke tingkat dunia adalah ....",
+            options: ["A. menyimpan dokumen tradisi di dalam peti terkunci", "B. membuat konten kreatif berupa dokumenter edukatif di platform gim dan media sosial", "C. membiarkan kebudayaan lokal punah secara alami", "D. menyalin kebudayaan negara lain tanpa modifikasi"],
+            answer: 1
+        },
+        {
+            q: "49. Kearifan lokal Mappalette Bola pada suku Bugis merupakan tradisi memindahkan rumah panggung kayu secara bersama-sama oleh puluhan warga. Nilai sosial utama yang dirawat dalam tradisi unik ini adalah ....",
+            options: ["A. persaingan kekuatan fisik antar pemuda desa", "B. gotong royong, persatuan, dan kepedulian antarsesama", "C. efisiensi biaya material konstruksi rumah beton", "D. komersialisasi jasa angkut bangunan"],
+            answer: 1
+        },
+        {
+            q: "50. Di tengah derasnya arus modernisasi, keberadaan kearifan lokal hendaknya dipandang sebagai ....",
+            options: ["A. penghambat utama kemajuan ekonomi nasional", "B. warisan leluhur yang tidak relevan lagi dengan masa kini", "C. benteng moral dan identitas jati diri bangsa yang harus diselaraskan dengan zaman", "D. syarat formalitas dalam merayakan hari besar kebudayaan"],
+            answer: 2
+        }
+    ];
+
+    // State Variables
+    let currentQuestion = 0;
+    let score = 0;
+    let studentData = { name: '', class: '' };
+    let selectedOption = null;
+
+    // Element References
+    const screenStart = document.getElementById('screen-start');
+    const screenQuiz = document.getElementById('screen-quiz');
+    const screenResult = document.getElementById('screen-result');
+    const formRegister = document.getElementById('form-register');
+
+    // Registration Event
+    formRegister.addEventListener('submit', function(e) {
+        e.preventDefault();
+        studentData.name = document.getElementById('student-name').value.trim();
+        studentData.class = document.getElementById('student-class').value;
+        
+        document.getElementById('player-info').innerText = `${studentData.name} (${studentData.class})`;
+        
+        screenStart.classList.remove('active');
+        screenQuiz.classList.add('active');
+        
+        loadQuestion();
+    });
+
+    // Render Question
+    function loadQuestion() {
+        selectedOption = null;
+        const btnNext = document.getElementById('btn-next');
+        btnNext.disabled = true;
+        btnNext.innerText = (currentQuestion === quizData.length - 1) ? "Selesaikan Game" : "Jawab & Lanjut";
+
+        const qData = quizData[currentQuestion];
+        document.getElementById('question-tracker').innerText = `Soal ${currentQuestion + 1} / ${quizData.length}`;
+        document.getElementById('progress-fill').style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+        document.getElementById('question-text').innerText = qData.q;
+
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    // Handle Option Selection
+    function selectOption(index, element) {
+        const allOptions = document.querySelectorAll('.option-btn');
+        allOptions.forEach(btn => btn.classList.remove('selected'));
+        
+        element.classList.add('selected');
+        selectedOption = index;
+        document.getElementById('btn-next').disabled = false;
+    }
+
+    // Next Question Action
+    function nextQuestion() {
+        if (selectedOption === null) return;
+
+        if (selectedOption === quizData[currentQuestion].answer) {
+            score++;
+        }
+
+        currentQuestion++;
+
+        if (currentQuestion < quizData.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    // Show Results & Auto-save to Google Sheets
+    function showResults() {
+        screenQuiz.classList.remove('active');
+        screenResult.classList.add('active');
+
+        const finalScoreValue = Math.round((score / quizData.length) * 100);
+        const wrongCount = quizData.length - score;
+
+        document.getElementById('res-name').innerText = studentData.name;
+        document.getElementById('res-class').innerText = studentData.class;
+        document.getElementById('res-total').innerText = quizData.length;
+        document.getElementById('res-correct').innerText = score;
+        document.getElementById('res-wrong').innerText = wrongCount;
+        document.getElementById('final-score').innerText = finalScoreValue;
+
+        const badge = document.getElementById('result-status');
+        if (finalScoreValue >= 80) {
+            badge.innerText = "Luar Biasa!";
+            badge.style.background = "#d1fae5";
+            badge.style.color = "#065f46";
+        } else if (finalScoreValue >= 60) {
+            badge.innerText = "Bagus!";
+            badge.style.background = "#fef3c7";
+            badge.style.color = "#92400e";
+        } else {
+            badge.innerText = "Perlu Belajar Lagi";
+            badge.style.background = "#fee2e2";
+            badge.style.color = "#991b1b";
+        }
+
+        // Send Data to Google Apps Script
+        const statusMsg = document.getElementById('status-msg');
+        if (scriptURL !== '') {
+            statusMsg.innerText = "Mengirim nilai ke Google Spreadsheet...";
+            
+            const payload = {
+                name: studentData.name,
+                class: studentData.class,
+                correct: score,
+                wrong: wrongCount,
+                score: finalScoreValue
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusMsg.innerText = "✓ Nilai berhasil dicatat ke Spreadsheet!";
+                statusMsg.style.color = "var(--success)";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusMsg.innerText = "Gagal mengirim data. Pastikan koneksi terhubung.";
+                statusMsg.style.color = "var(--danger)";
+            });
+        } else {
+            statusMsg.innerText = "Mode Latihan (Data tidak dikirim ke spreadsheet)";
+        }
+    }
+
+    // Restart Game
+    function restartGame() {
+        currentQuestion = 0;
+        score = 0;
+        selectedOption = null;
+        screenResult.classList.remove('active');
+        screenStart.classList.add('active');
+        formRegister.reset();
+    }
+</script>
+</body>
+</html>
